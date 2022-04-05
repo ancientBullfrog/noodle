@@ -22,7 +22,7 @@ it('FILE 1 - beforeEach is ran each time, numbers.length reset to 3', () => {
 	assert.strictEqual(numbers.length, 3);
 });
 
-it('FILE 1 << shows time sensitive tests in multiple test files are not out of sync with their associated test file', () => {
+it('FILE 1 << shows time sensitive tests in multiple test files become out of sync with their associated test file', () => {
 	return new Promise(resolve => {
 		setTimeout(() => {
 			resolve();

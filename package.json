@@ -4,9 +4,11 @@
 	"description": "Node and Browser test framework CLI",
 	"main": "index.js",
 	"scripts": {
-		"test": "npm run web && npm run node",
-		"web": "echo 'TESTING TME WEB' && cd samplewebproject && node ../index.js",
-		"node": "echo 'TESTING TME NODE' && cd samplenodeproject && node ../index.js"
+		"test": "npm run tmeweb && npm run noodleweb && npm run tmenode && npm run noodlenode",
+		"tmeweb": "echo 'TESTING TME WEB\n' && cd udemy/samplewebproject && node ../index.js",
+		"tmenode": "echo 'TESTING TME NODE\n' && cd udemy/samplenodeproject && node ../index.js",
+		"noodleweb": "echo 'TESTING NOODLE WEB\n' && cd samplewebproject && node ../index.js",
+		"noodlenode": "echo 'TESTING NOODLE NODE\n' && cd samplenodeproject && node ../index.js"
 	},
 	"repository": {
 		"type": "git",
