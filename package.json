@@ -1,0 +1,28 @@
+{
+	"name": "noodle",
+	"version": "1.0.0",
+	"description": "Node and Browser test framework CLI",
+	"main": "index.js",
+	"scripts": {
+		"test": "npm run web && npm run node",
+		"web": "echo 'TESTING TME WEB' && cd samplewebproject && node ../index.js",
+		"node": "echo 'TESTING TME NODE' && cd samplenodeproject && node ../index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mywifemademejoin/noodle.git"
+	},
+	"author": "Dave Cartwright",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/mywifemademejoin/noodle/issues"
+	},
+	"homepage": "https://github.com/mywifemademejoin/noodle#readme",
+	"bin": {
+		"noodle": "index.js"
+	},
+	"dependencies": {
+		"chalk": "^4.1.2",
+		"jsdom": "^19.0.0"
+	}
+}
