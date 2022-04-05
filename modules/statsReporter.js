@@ -4,24 +4,44 @@
  * provides timing functions
  */
 
-const moomin = require('./moomin');
-
 const timers = [];
 
 stats = {
+	testFiles : {},
 	tests     : {
 		total : 0,
 		pass  : 0,
 		fail  : 0
 	},
-	failed(num = 1) {
-		this.tests.fail += num;
+	failed({ fileName, description }) {
+		this.testFiles[fileName].testsFailed.push(description);
 	},
-	passed(num = 1) {
-		this.tests.pass += num;
+	passed({ fileName }) {
+		// this.tests.pass += num;
+		++this.testFiles[fileName].testsPassed;
 	},
 	get() {
-		return { 'Total Tests': this.tests.total, 'Tests Passed': this.tests.pass, 'Tests Failed': this.tests.fail };
+		const stats = {};
+		for (let [
+			key,
+			value
+		] of Object.entries(this.testFiles)) {
+			stats[key] = {
+				elapsedTime : value.elapsedTime,
+				totalTests  : value.totalTests,
+				testsPassed : value.testsPassed,
+				testsFailed : 0
+			};
+			if (value.testsFailed.length) {
+				const failedTests = {};
+				for (let test of value.testsFailed) {
+					failedTests[test] = false;
+				}
+				stats[key].testsFailed = failedTests;
+			}
+		}
+
+		return stats;
 	},
 
 	timeStart(label) {
@@ -33,6 +53,16 @@ stats = {
 		const elapsed = timeNow - timer.startTime;
 		timers.splice(timers.indexOf(timer), 1);
 		return elapsed;
+	},
+	add(fileName) {
+		if (!this.testFiles[fileName]) {
+			this.testFiles[fileName] = {
+				elapsedTime : 0,
+				totalTests  : 0,
+				testsPassed : 0,
+				testsFailed : []
+			};
+		}
 	}
 };
 

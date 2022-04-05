@@ -33,7 +33,7 @@ class Runner {
 			const file = this.testFileObjects.find(testFile => testFile.file.fileName === this.currentlyParsingFile);
 			file.beforeEach = this.beforeEachTemp;
 			file.unitTests.push(unitTest);
-			++stats.tests.total;
+			++stats.testFiles[file.file.fileName].totalTests;
 		};
 
 		// collection of .test.js file names and paths
@@ -96,6 +96,7 @@ class Runner {
 			try {
 				//use messager here to update command line
 				moomin.info('PARSING', file.fileName);
+				stats.add(file.fileName);
 				this.currentlyParsingFile = file.fileName;
 				this.testFileObjects.push({
 					file,
@@ -146,7 +147,7 @@ class Runner {
 									// process.stdout.clearScreenDown();
 									// re-print test id in green
 									moomin.success(`It ${description} - ${chalk.yellow(stats.timeEnd(testId) / 1000)}`);
-									stats.passed();
+									stats.passed({ fileName: file.fileName });
 								}
 							} catch (error) {
 								/**
@@ -155,13 +156,17 @@ class Runner {
 
 								const { description } = test;
 								// go back to description line and clear
-								process.stdout.moveCursor(0, -1);
-								process.stdout.clearLine(0);
+								// process.stdout.moveCursor(0, -1);
+								// process.stdout.clearLine(0);
 								moomin.error(
 									`It ${description} - ${chalk.yellow(stats.timeEnd(testId) / 1000)}`,
 									`\n${error.message}\n`
 								);
-								stats.failed();
+								stats.failed({
+									fileName    : file.fileName,
+									error       : error.message,
+									description
+								});
 							}
 						}
 
@@ -170,7 +175,6 @@ class Runner {
 
 						// update console reporting for parallel unit-test execution
 						try {
-							stats.timeStart('promises');
 							const promiseResults = await promiseWhen(this.promises);
 							/**
 							 * Removed console manipulation as cannot control extra lines due to wrapping
@@ -181,20 +185,24 @@ class Runner {
 
 							// print result based on success value
 							for (let result of promiseResults) {
-								const testId = promiseResults.indexOf(result);
-								const { success, description, data } = result;
+								const { success, description, data, time } = result;
 
 								if (success) {
-									moomin.success(`It ${description}`);
-									stats.passed();
+									moomin.success(`It ${description} ${time}`);
+									stats.passed({ fileName: file.fileName });
+									// ++stats.testFiles[file.fileName].testsPassed;
+
 									continue;
 								}
 								moomin.error(` It ${description}`, `\n${data ? data.message : ''}\n`);
-								stats.failed();
+								stats.failed({
+									fileName    : file.fileName,
+									error       : data.message,
+									description
+								});
 							}
-							moomin(chalk.yellow(`Elapsed Time ${stats.timeEnd('promises') / 1000}s`));
 						} catch (error) {
-							moomin('ERROR FROM PROMISES???', error.message);
+							moomin(chalk.blue('ERROR FROM PROMISES???', error.message));
 						}
 					}
 				});
@@ -215,15 +223,16 @@ class Runner {
 	async runTests() {
 		for (let file of this.testFileObjects) {
 			const fileObjectId = this.testFileObjects.indexOf(file);
+			const fileName = file.file.fileName;
 
-			moomin.info('\nRunning Tests In', file.file.fileName, '\n');
-			stats.timeStart(file.file.fileName);
+			moomin.info('\nRunning Tests In', fileName);
+			stats.timeStart(fileName);
 			await file.runUnitTests();
 			//tests complete?
-			moomin.info(`\nTesting Completed  in : ${stats.timeEnd(file.file.fileName) / 1000}\n`);
+			stats.testFiles[fileName].elapsedTime = stats.timeEnd(fileName) / 1000;
 			// end if no more files to test
 			if (fileObjectId + 1 >= this.testFileObjects.length) {
-				moomin.info('\nThere are no More Files to Test!');
+				moomin.info('\n\n\nThere are no More Files to Test!\nGetting Results');
 				moomin(stats.get(), '\n');
 			}
 		}

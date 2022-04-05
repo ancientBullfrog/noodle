@@ -1,5 +1,5 @@
-const moomin = require('../modules/moomin');
-
+const chalk = require('chalk');
+const stats = require('../modules/statsReporter');
 /**
 		 * Waits for all promises to finish and returns results in an array. Similar to Promise.all except rejected promises do not cause all promises to fail but are instead returned as a failed object
 		 * @param {array} promises array of promises 
@@ -12,10 +12,12 @@ function promiseWhen(promises) {
 	return new Promise(resolve => {
 		for (let promise of promises) {
 			const promiseIndex = promises.indexOf(promise);
+			stats.timeStart(promiseIndex);
 			promise
 				.then(response => {
 					const { description, data } = response;
-					results[promiseIndex] = { success: true, description, data };
+					const time = chalk.yellow(`${stats.timeEnd(promiseIndex) / 1000}s`);
+					results[promiseIndex] = { success: true, description, data, time };
 					promises.pop();
 				})
 				.catch(error => {
