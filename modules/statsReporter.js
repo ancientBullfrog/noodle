@@ -8,11 +8,7 @@ const timers = [];
 
 stats = {
 	testFiles : {},
-	tests     : {
-		total : 0,
-		pass  : 0,
-		fail  : 0
-	},
+
 	failed({ fileName, description }) {
 		this.testFiles[fileName].testsFailed.push(description);
 	},
