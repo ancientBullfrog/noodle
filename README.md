@@ -83,11 +83,19 @@ git clone https://github.com/mywifemademejoin/noodle.git
 cd noodle
 npm run test
 ```
+or run individual tests with one of the following
+```
+npm run noodle
+npm run noodleweb
+npm run noodlenode
+
+npm run tme
+npm run tmeweb
+npm run tmenode
+```
 
 ## Planned Updates
 - Improve test scripts to better highlight the differences between the two versions. 
-- Remove some spacing between feedback logs
-- Move more feedback to stats object
 - Show stats if process exits early
 - Enable user console logs and incorporate into stats object and test error reporting. 
 
